@@ -18,20 +18,26 @@ const ocid_promises = [];
 const url = 'mongodb://localhost:27017/' + args.database;
 const db = monk(url)
             .then( (db) => {
-
                 args.collections.map( (collection) => {
                     let promise = findAllOCIDs(db, collection);
                     ocid_promises.push(promise);
                 } );
 
                 Promise.all(ocid_promises).then( results => {
+                    let uniques = {};
                     results.map( (result) => {
                         result.map( (line) => {
-                            process.stdout.write(line.ocid + '\n', delete line);
+                            if(!uniques.hasOwnProperty(line.ocid)) uniques[line.ocid] = 1;
                         } );
                         delete result;
                     } );
                     delete results;
+
+                    Object.keys(uniques).map( (line) => {
+                        console.log(line);
+                        delete uniques[line];
+                    } );
+
                     db.close();
                     process.exit();
                 });
