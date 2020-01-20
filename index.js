@@ -15,22 +15,23 @@ if(!args.database || !args.collections) {
     process.exit(1);
 }
 const idField = (args.field)? args.field : 'ocid';
+const clean_field = idField.replace(/\./g, '_');
 
-const ocid_promises = [];
-const url = 'mongodb://localhost:27017/' + args.database;
+const id_promises = [];
+const url = 'mongodb://localhost:27017/' + args.database + '?socketTimeoutMS=500000&connectTimeoutMS=500000';
 const db = monk(url)
             .then( (db) => {
                 args.collections.map( (collection) => {
-                    let promise = findAllOCIDs(db, collection);
-                    ocid_promises.push(promise);
+                    let promise = findAllIDs(db, collection);
+                    id_promises.push(promise);
                 } );
 
-                Promise.all(ocid_promises).then( results => {
+                Promise.all(id_promises).then( results => {
                     db.close();
                     let uniques = {};
                     results.map( (result) => {
                         result.map( (line) => {
-                            if(!uniques.hasOwnProperty(line[idField])) uniques[line[idField]] = 1;
+                            if(!uniques.hasOwnProperty(line[idField])) uniques[line[clean_field]] = 1;
                         } );
                         delete result;
                     } );
@@ -46,23 +47,25 @@ const db = monk(url)
                 });
             });
 
-function findAllOCIDs(db, collection) {
+function findAllIDs(db, collection) {
     const coll = db.get(collection);
+
     return coll.aggregate(
         [
             {
                 "$group" : {
                     "_id" : {
-                        [idField] : "$" + idField
+                        [clean_field] : "$" + idField
                     }
                 }
             },
             {
                 "$project" : {
                     "_id" : 0,
-                    [idField] : "$_id." + idField
+                    [clean_field] : "$_id." + clean_field
                 }
             }
-        ]
+        ],
+        { "allowDiskUse": true }
     )
 }
