@@ -3,9 +3,11 @@ const monk = require('monk');
 const commandLineArgs = require('command-line-args');
 
 const optionDefinitions = [
-  { name: 'collections', alias: 'c', type: String, multiple: true, defaultOption: true },
-  { name: 'database', alias: 'd', type: String },
-  { name: 'field', alias: 'f', type: String }
+    { name: 'host', alias: 'h', type: String, defaultValue: 'localhost' },
+    { name: 'port', alias: 'p', type: String, defaultValue: '27017' },
+    { name: 'collections', alias: 'c', type: String, multiple: true, defaultOption: true },
+    { name: 'database', alias: 'd', type: String },
+    { name: 'field', alias: 'f', type: String }
 ];
 
 const args = commandLineArgs(optionDefinitions);
@@ -18,7 +20,7 @@ const idField = (args.field)? args.field : 'ocid';
 const clean_field = idField.replace(/\./g, '_');
 
 const id_promises = [];
-const url = 'mongodb://localhost:27017/' + args.database + '?socketTimeoutMS=500000&connectTimeoutMS=500000';
+const url = 'mongodb://' + args.host + ':' + args.port + '/' + args.database + '?socketTimeoutMS=500000&connectTimeoutMS=500000';
 const db = monk(url)
             .then( (db) => {
                 args.collections.map( (collection) => {
