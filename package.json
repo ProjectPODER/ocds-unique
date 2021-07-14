@@ -1,6 +1,6 @@
 {
   "name": "ocds-unique",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "List unique OCIDs from all OCDS datasets.",
   "main": "index.js",
   "scripts": {

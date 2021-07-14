@@ -29,7 +29,6 @@ const db = monk(url)
                 } );
 
                 Promise.all(id_promises).then( results => {
-                    db.close();
                     let uniques = {};
                     results.map( (result) => {
                         result.map( (line) => {
