@@ -1,20 +1,21 @@
 # OCDS Unique
 
-Este script recibe como parámetros el nombre de una base de datos MongoDB y un listado de colecciones con documentos en el formato OCDS, y devuelve un listado de todos los *ocid* únicos dentro de las colecciones, separados por newline (**\n**).
+This script takes a Mongo database and a list of collections and returns a newline separated list of unique strings. The strings returned correspond to the field specified as an option from the command line.
 
-## Ejemplo de uso
+## Usage
 
-Desde el directorio raíz:
+    node index.js -d DATABASE -c COLLECTION1 COLLECTION2
 
-    node index.js -d quienesquienwiki -c contracts_ocds
-
-Este script se utiliza en conjunto con [record-compiler](http://gitlab.rindecuentas.org/equipo-qqw/record-compiler) para realizar la unificación de releases procesados por [Poppins](http://gitlab.rindecuentas.org/equipo-qqw/poppins) y convertir a los records que devuelve [la API de QQW](http://gitlab.rindecuentas.org/equipo-qqw/QuienEsQuienApi).
-
-    node ocds-unique/index.js -d quienesquienwiki -c contracts_ocds | node record-compiler/index.js -d quienesquienwiki -c contracts_ocds
-
-## Opciones
+## Options
 
 El script acepta las siguientes opciones como argumentos:
 
-    --database      -d  El nombre de la base de datos que contiene los contratos
-    --collections   -c  El listado de colecciones con documentos OCDS
+    --host          -h  Mongo host (defaults to localhost).
+    --port          -p  Mongo port (defaults to 27017).
+    --database      -d  Name of Mongo database.
+    --collections   -c  List of Mongo collection names.
+    --field         -f  Name of field to obtain unique values from.
+
+## Additional information
+
+This script is used along with [record-compiler](http://gitlab.rindecuentas.org/equipo-qqw/record-compiler) to properly compile OCDS records inside [Poppins](http://gitlab.rindecuentas.org/equipo-qqw/poppins). Output of this script can be redirected as the input to the next script.
